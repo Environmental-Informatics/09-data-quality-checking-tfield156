@@ -55,6 +55,7 @@ def Check01_RemoveNoDataValues( DataDF, ReplacedValuesDF ):
     # determine the number of changes in each column and store them in RVDF
     ReplacedValuesDF.iloc[0] = DataDF.count() - newDF.count()
     
+    # Plot before and after the data quality check for each relevant variable
     plt.figure(figsize=(9,6.5))
     DataDF['Precip'].plot(style='r')
     newDF['Precip'].plot(style='g')
@@ -109,12 +110,14 @@ def Check02_GrossErrors( DataDF, ReplacedValuesDF ):
     # add your code here
     # make modifications to newDF so they can be compared when finished
     oldDF = DataDF
-    oldCount = DataDF.count()
+    oldCount = DataDF.count() #number of values before removing gross errors
+    #Remove gross errors based on defined ranges
     DataDF['Precip'].loc[(DataDF['Precip'] < 0) | (DataDF['Precip'] > 25)] = np.NaN
     DataDF['Max Temp'].loc[(DataDF['Max Temp'] < -25) | (DataDF['Max Temp'] > 35)] = np.NaN
     DataDF['Min Temp'].loc[(DataDF['Min Temp'] < -25) | (DataDF['Min Temp'] > 35)] = np.NaN
     DataDF['Wind Speed'].loc[(DataDF['Wind Speed'] < 0) | (DataDF['Wind Speed'] > 10)] = np.NaN
     
+    # Plot before and after the data quality check for each relevant variable
     plt.figure(figsize=(9,6.5))
     oldDF['Precip'].plot(style='r')
     DataDF['Precip'].plot(style='g')
@@ -176,6 +179,7 @@ def Check03_TmaxTminSwapped( DataDF, ReplacedValuesDF ):
     DataDF['Max Temp'].loc[diff < 0] = oldDF['Min Temp'].loc[diff < 0] #Replace max with min
     DataDF['Min Temp'].loc[diff < 0] = oldDF['Max Temp'].loc[diff < 0] #Repalce min with max
 
+    # Plot before and after the data quality check for each relevant variable
     plt.figure(figsize=(9,6.5))
     oldDF['Max Temp'].plot(style='r')
     DataDF['Max Temp'].plot(style='g')
@@ -215,10 +219,11 @@ def Check04_TmaxTminRange( DataDF, ReplacedValuesDF ):
     # add your code here
     oldDF = DataDF
     oldCount = DataDF.count()
-    diff = DataDF['Max Temp'] - DataDF['Min Temp'] #Less than zero for values that need to be swapped
+    diff = DataDF['Max Temp'] - DataDF['Min Temp'] #Greater than 25 for values that need to be removed
     DataDF['Max Temp'].loc[diff > 25] = np.NaN
     DataDF['Min Temp'].loc[diff > 25] = np.NaN
     
+    # Plot before and after the data quality check for each relevant variable
     plt.figure(figsize=(9,6.5))
     oldDF['Max Temp'].plot(style='r')
     DataDF['Max Temp'].plot(style='g')
@@ -282,13 +287,8 @@ if __name__ == '__main__':
     
     
     
-    
+    # Output QC checked data and number of changes for each check/variable
     ReplacedValuesDF.to_csv("DataQualityCheckingChangesMade_Field.txt",header=True,sep='\t')
-    
-    
-    
-
-    
     DataDF.to_csv("DataQualityCheckingComplete_Field.txt", header=False, sep=' ')
     
 
